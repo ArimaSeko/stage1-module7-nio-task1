@@ -17,18 +17,18 @@ public class FileReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         String strAge;
-        email = cut(data, "Email: ");
         String strPhone ;
-        name = cut(data, "Name: ");
         try{strAge = cut(data, "Age: ");
             email = cut(data, "Email: ");
             strPhone = cut(data, "Phone: ");
             name = cut(data, "Name: ");
             age = Integer.parseInt(strAge.trim());
             phone = Long.parseLong(strPhone.trim());
-        }catch (NullPointerException|NumberFormatException e){e.printStackTrace();}
-        return new Profile(name,age,email,phone);
+            return new Profile(name,age,email,phone);
+        }catch (NullPointerException|NumberFormatException e){e.printStackTrace();
+            return null;}
     }
 
     public static String cut(String text, String find) {
@@ -41,12 +41,11 @@ public class FileReader {
         if (start > -1)answer = text.substring(start + find.length(), end);
         return answer;}else return null;
     }
-    public static StringBuilder readFromFileUsingFileChannel(File rfile)  {
+    public static StringBuilder readFromFileUsingFileChannel(File rfile) throws IOException {
 
-        RandomAccessFile file ;
         StringBuilder content = null;
         ByteBuffer buffer;
-
+        RandomAccessFile file=null;
         try {
             file = new RandomAccessFile(rfile, "r");
             FileChannel channel = file.getChannel();
@@ -60,14 +59,18 @@ public class FileReader {
                 }
                 buffer.clear();
                 bytesRead = channel.read(buffer);
+
             }
-            file.close();
-        }catch (IOException e) {
-            e.printStackTrace();
+            return content;
         }
-        return content;
+        catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }finally {
+            file.close();
+        }
+        }
     }
 
 
 
-}
