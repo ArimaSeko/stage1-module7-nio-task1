@@ -38,21 +38,35 @@ public class FileReader {
         if (start > -1)answer = text.substring(start + find.length(), end);
         return answer;
     }
-    public static StringBuilder readFromFileUsingFileChannel(File rfile) throws Exception {
-        RandomAccessFile file = new RandomAccessFile(rfile, "r");
-        FileChannel channel = file.getChannel();
-        StringBuilder content = new StringBuilder();
-        ByteBuffer buffer = ByteBuffer.allocate(256);
-        int bytesRead = channel.read(buffer);
-        while (bytesRead != -1) {
-            buffer.flip();
-            while (buffer.hasRemaining()) {
-                content.append((char) buffer.get());
+    public static StringBuilder readFromFileUsingFileChannel(File rfile) {
+        RandomAccessFile file = null;
+        StringBuilder content=null;
+        ByteBuffer buffer = null;
+        try {
+            file = new RandomAccessFile(rfile, "r");
+            FileChannel channel = file.getChannel();
+            content = new StringBuilder();
+            buffer = ByteBuffer.allocate(256);
+            int bytesRead = channel.read(buffer);
+            while (bytesRead != -1) {
+                buffer.flip();
+                while (buffer.hasRemaining()) {
+                    content.append((char) buffer.get());
+                }
+                buffer.clear();
+                bytesRead = channel.read(buffer);
             }
-            buffer.clear();
-            bytesRead = channel.read(buffer);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        file.close();
         return content;
     }
 
